@@ -26,14 +26,23 @@ class BlackJack
   end
 
   module BusinessLogic
+
+    def all_players
+      @players.concat([@dealer])
+    end
+
     def next_player
-      all = [@dealer].concat(@players)
+      all = all_players
       idx = @current_player
       loop do
         if idx >= all.length-1
           idx = 0
         else
           idx += 1
+        end
+        #there is no available player anymore..everyone busted?
+        if idx == @current_player
+          return nil
         end
         if !busted?(all[idx])
           @current_player = idx
@@ -44,7 +53,7 @@ class BlackJack
     end
 
     def should_draw?(player)
-      (player.cards.nil? || player.cards.length < 2) ? true : player.draw?
+      player.draw?
     end
 
     def sum(player)
@@ -62,8 +71,13 @@ class BlackJack
       total
     end
 
-    def busted?(player)
-      sum(player) > 21
+    def busted?(player, &when_busted)
+      sum = sum(player)
+      busted = sum > 21
+      if busted && !when_busted.nil?
+        when_busted.call sum
+      end
+      busted
     end
 
     def won?(player)
@@ -72,22 +86,29 @@ class BlackJack
 
     def handle_player(player)
       loop do
+        say player.current_cards_as_str
         break if !should_draw?(player)
         card = @dealer.give(@stack)
         say "Your card is: [ #{card.type} ]"
         player.draw(card)
-        if busted?(player)
-          say 'You are busted!'
-          break
-        end
+        break if busted?(player) {|sum| say "You are busted! Total sum: #{sum}."}
       end
     end
 
     def play
+      # give everyone two cards
+      2.times do
+        all_players.each do |player|
+          card = @dealer.give @stack
+          player.draw card
+        end
+      end
+      # ... then start to ask ... draw OR stay
       loop do
         player = next_player
         if player.nil?
           say 'There are no players. Everyone is busted.'
+          break
         else
           say '*********************************************'
           say "Dear #{player.name}, you are the next player."

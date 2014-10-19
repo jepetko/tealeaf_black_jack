@@ -20,4 +20,12 @@ module Drawable
     @cards = [] if @cards.nil?
     @cards << card
   end
+
+  def current_cards_as_str
+    str = ''
+    @cards.each do |c|
+      str << " [ #{c.type} ] "
+    end
+    str
+  end
 end
