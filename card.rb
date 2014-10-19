@@ -1,13 +1,20 @@
 class Card
   attr_accessor :type
-  attr_accessor :value
-  def initialize(type,value=type)
+  attr_accessor :default_value
+  def initialize(type,default_value=type)
     self.type = type
-    self.value = value
+    self.default_value = default_value
+  end
+
+  def value
+    if block_given?
+      yield
+    else
+      default_value
+    end
+  end
+
+  def ace?
+    self.type == 'Ace'
   end
 end
-
-
-
-p Card.new 'Jack', 10
-p Card.new 3
