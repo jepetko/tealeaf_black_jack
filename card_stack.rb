@@ -1,4 +1,4 @@
-load 'card.rb'
+require './card'
 
 class CardStack
   BASIC_STACK = []
