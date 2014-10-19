@@ -1,4 +1,4 @@
 tealeaf_black_jack
 ==================
 
-![Black Jack from dealer's point of view](/Black%20jack%20-%20dealer.png)
+![Black Jack from dealer's point of view](https://raw.github.com/jepetko/tealeaf_black_jack/master/black_jack_dealer.png)
