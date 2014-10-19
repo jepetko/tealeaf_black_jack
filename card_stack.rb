@@ -14,7 +14,7 @@ class CardStack
       BASIC_STACK << Card.new('Jack',10)
       BASIC_STACK << Card.new('Queen',10)
       BASIC_STACK << Card.new('King',10)
-      BASIC_STACK << Card.new('Ace',0)
+      BASIC_STACK << Card.new('Ace',11)
     end
   end
 

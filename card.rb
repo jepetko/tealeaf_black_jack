@@ -8,7 +8,7 @@ class Card
 
   def value
     if block_given?
-      yield
+      yield self
     else
       default_value
     end
