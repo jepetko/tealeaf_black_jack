@@ -24,15 +24,3 @@ class CardStack
     self.stack = BASIC_STACK.shuffle
   end
 end
-
-last_val = 10
-CardStack.new.stack.each do |c|
-  val = c.value do
-    if last_val+11 > 21
-      last_val + 1
-    else
-      last_val + 11
-    end
-  end
-  puts val
-end
