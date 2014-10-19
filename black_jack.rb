@@ -27,7 +27,7 @@ class BlackJack
 
   module BusinessLogic
     def next_player
-      all = @players.concat([@dealer])
+      all = [@dealer].concat(@players)
       idx = @current_player
       loop do
         if idx >= all.length-1
@@ -87,7 +87,7 @@ class BlackJack
       loop do
         player = next_player
         if player.nil?
-          say 'There are no players.'
+          say 'There are no players. Everyone is busted.'
         else
           say '*********************************************'
           say "Dear #{player.name}, you are the next player."
