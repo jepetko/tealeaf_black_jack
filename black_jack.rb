@@ -9,13 +9,12 @@ class BlackJack
       puts text
     end
     def kick_off?
-      @players = []
       say 'Welcome to Black Jack. Have fun.'
       say 'Give the number of players at the table:'
       num_of_players = gets.chomp
       if !num_of_players.chomp.match(/^[0-9]+$/).nil?
         num_of_players.to_i.times do |i|
-          say "Player ##{i}:"
+          say "Player ##{i+1}:"
           @players << Player.new(gets.chomp)
         end
       else
@@ -23,14 +22,19 @@ class BlackJack
       end
       !@players.empty?
     end
+    def print_results(&players_score)
+      (@players + [@dealer]).each_with_index do |player,idx|
+        say "##{idx+1} #{player.name}: #{players_score.call(player)}"
+      end
+    end
   end
 
   module BusinessLogic
     module PlayerIterator
       def all_players
-        @players.concat([@dealer])
+        @players + [@dealer]
       end
-      def next_player(&accept_player_block)
+      def next_player(accept_player_block)
 
         all = all_players
         @current_player_idx ||= -1
@@ -57,7 +61,11 @@ class BlackJack
     include PlayerIterator
 
     def should_draw?(player)
-      player.draw?
+      if player.is_a?(Dealer)
+        !should_stay?(player)
+      else
+        player.draw?
+      end
     end
 
     def sum(player)
@@ -88,6 +96,10 @@ class BlackJack
       sum(player) == 21
     end
 
+    def should_stay?(dealer)
+      sum(dealer) >= 17
+    end
+
     def handle_player(player)
       loop do
         say player.current_cards_as_str
@@ -101,20 +113,48 @@ class BlackJack
 
     def play
       # give everyone two cards
+      say '*********************************'
+      say 'Giving cards:'
       2.times do
         all_players.each do |player|
           card = @dealer.give @stack
           player.draw card
         end
+        print_results {|player| sum(player)}
       end
+      say '*********************************'
+
       # ... then start to ask ... draw OR stay
       loop do
-        player = next_player {|player| !busted?(player)}
-        if player.nil?
-          say 'There are no players. Everyone is busted.'
+        # detect the next player
+        accept_player = lambda {|player|
+          if busted?(player)
+            return false
+          else
+            if player.is_a?(Dealer)
+              dealer_sum = sum player
+              return dealer_sum < 17
+            end
+          end
+          true
+        }
+        player = next_player accept_player
+
+        if busted?(@dealer)
+          say "Dealer lost! Dealer's score: #{sum(@dealer)}"
+          say 'Here are your results:'
+          print_results {|player| sum(player)}
+          break
+        elsif won?(@dealer)
+          say "Dealer won! Dealer's score: #{sum(@dealer)}"
+          break
+        elsif should_stay?(@dealer)
+          say "Dealer's limit reached: #{sum(@dealer)}"
+          say 'Here are your results:'
+          print_results {|player| sum(player)}
           break
         else
-          say '*********************************************'
+          say '*********************************'
           say "Dear #{player.name}, you are the next player."
           handle_player player
         end
@@ -126,8 +166,8 @@ class BlackJack
   include BusinessLogic
 
   def initialize
-    @dealer = Dealer.new 'Jack'
-    @current_player = -1
+    @dealer = Dealer.new '<DEALER>'
+    @players = []
     @stack = CardStack.new
   end
 
