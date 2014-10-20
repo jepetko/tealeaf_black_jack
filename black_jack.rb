@@ -26,31 +26,35 @@ class BlackJack
   end
 
   module BusinessLogic
-
-    def all_players
-      @players.concat([@dealer])
-    end
-
-    def next_player
-      all = all_players
-      idx = @current_player
-      loop do
-        if idx >= all.length-1
-          idx = 0
-        else
-          idx += 1
-        end
-        #there is no available player anymore..everyone busted?
-        if idx == @current_player
-          return nil
-        end
-        if !busted?(all[idx])
-          @current_player = idx
-          return all[idx]
-        end
+    module PlayerIterator
+      def all_players
+        @players.concat([@dealer])
       end
-      nil
+      def next_player(&accept_player_block)
+
+        all = all_players
+        @current_player_idx ||= -1
+
+        idx = @current_player_idx
+        loop do
+          if idx >= all.length-1
+            idx = 0
+          else
+            idx += 1
+          end
+          #there is no available player anymore..everyone busted?
+          if idx == @current_player_idx
+            return nil
+          end
+          if accept_player_block.call(all[idx])
+            @current_player_idx = idx
+            return all[idx]
+          end
+        end
+        nil
+      end
     end
+    include PlayerIterator
 
     def should_draw?(player)
       player.draw?
@@ -105,7 +109,7 @@ class BlackJack
       end
       # ... then start to ask ... draw OR stay
       loop do
-        player = next_player
+        player = next_player {|player| !busted?(player)}
         if player.nil?
           say 'There are no players. Everyone is busted.'
           break
