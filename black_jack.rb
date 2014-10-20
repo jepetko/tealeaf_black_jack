@@ -27,6 +27,13 @@ class BlackJack
         say "##{idx+1} #{player.name}: #{players_score.call(player)}"
       end
     end
+    def print_winner(winner)
+      if winner.nil?
+        say 'Winner is no one.'
+      else
+        say "Winner is #{winner.name}."
+      end
+    end
   end
 
   module BusinessLogic
@@ -111,6 +118,14 @@ class BlackJack
       end
     end
 
+    def detect_winner
+      eligible_players = all_players.select { |p| !busted?(p)}
+      sorted = eligible_players.sort do |p1,p2|
+        sum(p1) - sum(p2)
+      end
+      sorted.last
+    end
+
     def play
       # give everyone two cards
       say '*********************************'
@@ -158,6 +173,7 @@ class BlackJack
           handle_player player
         end
       end
+      print_winner detect_winner
     end
   end
 
