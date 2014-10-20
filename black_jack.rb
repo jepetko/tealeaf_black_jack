@@ -107,7 +107,7 @@ class BlackJack
         card = @dealer.give(@stack)
         say "Your card is: [ #{card.type} ]"
         player.draw(card)
-        break if busted?(player) {|sum| say "You are busted! Total sum: #{sum}."}
+        break if busted?(player) {|sum| say ".. #{player.name}, you are busted! Your sum: #{sum}."}
       end
     end
 
@@ -124,22 +124,7 @@ class BlackJack
       end
       say '*********************************'
 
-      # ... then start to ask ... draw OR stay
       loop do
-        # detect the next player
-        accept_player = lambda {|player|
-          if busted?(player)
-            return false
-          else
-            if player.is_a?(Dealer)
-              dealer_sum = sum player
-              return dealer_sum < 17
-            end
-          end
-          true
-        }
-        player = next_player accept_player
-
         if busted?(@dealer)
           say "Dealer lost! Dealer's score: #{sum(@dealer)}"
           say 'Here are your results:'
@@ -154,6 +139,20 @@ class BlackJack
           print_results {|player| sum(player)}
           break
         else
+          # detect the next player. Player can be asked:
+          # a) if he is not busted
+          # b) if he is not the *dealer* whose score >= 17 (then he must stay)
+          accept_player = lambda {|player|
+            if busted?(player)
+              return false
+            else
+              if player.is_a?(Dealer)
+                return !should_stay?(player)
+              end
+            end
+            true
+          }
+          player = next_player accept_player
           say '*********************************'
           say "Dear #{player.name}, you are the next player."
           handle_player player
