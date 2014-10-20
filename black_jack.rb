@@ -29,9 +29,9 @@ class BlackJack
     end
     def print_winner(winner)
       if winner.nil?
-        say 'Winner is no one.'
+        say '-+-+-+-+-+-+ Winner is no one. -+-+-+-+-+-+ '
       else
-        say "Winner is #{winner.name}."
+        say "-+-+-+-+-+-+ Winner is #{winner.name}. -+-+-+-+-+-+ "
       end
     end
   end
@@ -142,7 +142,7 @@ class BlackJack
       loop do
         if busted?(@dealer)
           say "Dealer lost! Dealer's score: #{sum(@dealer)}"
-          say 'Here are your results:'
+          say 'Here are the final results:'
           print_results {|player| sum(player)}
           break
         elsif won?(@dealer)
@@ -150,7 +150,7 @@ class BlackJack
           break
         elsif should_stay?(@dealer)
           say "Dealer's limit reached: #{sum(@dealer)}"
-          say 'Here are your results:'
+          say 'Here are the final results:'
           print_results {|player| sum(player)}
           break
         else
