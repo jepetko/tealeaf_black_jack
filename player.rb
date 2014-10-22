@@ -1,8 +1,8 @@
-require './drawable'
+require './draw_ability'
 require './card'
 
 class Player
-  include Drawable
+  include DrawAbility
   attr_accessor :name
 
   def initialize(name)

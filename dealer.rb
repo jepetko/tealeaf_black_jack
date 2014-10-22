@@ -1,6 +1,6 @@
 require './player'
-require './giveable'
+require './give_ability'
 
 class Dealer < Player
-  include Giveable
+  include GiveAbility
 end

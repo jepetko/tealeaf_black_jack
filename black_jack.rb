@@ -100,7 +100,7 @@ class BlackJack
     end
 
     def won?(player)
-      sum(player) == 21
+      sum(player) == 21 && !detect_winner.nil?
     end
 
     def should_stay?(dealer)
@@ -109,7 +109,7 @@ class BlackJack
 
     def handle_player(player)
       loop do
-        say player.current_cards_as_str
+        say player.drawn_cards_as_str
         break if !should_draw?(player)
         card = @dealer.give(@stack)
         say "Your card is: [ #{card.type} ]"
@@ -122,6 +122,11 @@ class BlackJack
       eligible_players = all_players.select { |p| !busted?(p)}
       sorted = eligible_players.sort do |p1,p2|
         sum(p1) - sum(p2)
+      end
+      len = sorted.length
+      # tie
+      if len > 1
+        return nil if sum(sorted.last) == sum(sorted[sorted.length-2])
       end
       sorted.last
     end

@@ -1,4 +1,4 @@
-module Drawable
+module DrawAbility
   attr_accessor :cards
 
   module Interactive
@@ -21,7 +21,7 @@ module Drawable
     @cards << card
   end
 
-  def current_cards_as_str
+  def drawn_cards_as_str
     str = ''
     @cards.each do |c|
       str << " [ #{c.type} ] "
