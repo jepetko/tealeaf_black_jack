@@ -15,15 +15,15 @@ class BlackJack
       if !num_of_players.chomp.match(/^[0-9]+$/).nil?
         num_of_players.to_i.times do |i|
           say "Player ##{i+1}:"
-          @players << Player.new(gets.chomp)
+          players << Player.new(gets.chomp)
         end
       else
         say 'The number of players is not valid.'
       end
-      !@players.empty?
+      !players.empty?
     end
     def print_results(&players_score)
-      (@players + [@dealer]).each_with_index do |player,idx|
+      (players + [dealer]).each_with_index do |player,idx|
         say "##{idx+1} #{player.name}: #{players_score.call(player)}"
       end
     end
@@ -39,7 +39,7 @@ class BlackJack
   module BusinessLogic
     module PlayerIterator
       def all_players
-        @players + [@dealer]
+        players + [dealer]
       end
       def next_player(accept_player_block)
 
@@ -111,7 +111,7 @@ class BlackJack
       loop do
         say player.drawn_cards_as_str
         break if !should_draw?(player)
-        card = @dealer.give(@stack)
+        card = dealer.give(stack)
         say "Your card is: [ #{card.type} ]"
         player.draw(card)
         break if busted?(player) {|sum| say ".. #{player.name}, you are busted! Your sum: #{sum}."}
@@ -137,7 +137,7 @@ class BlackJack
       say 'Giving cards:'
       2.times do
         all_players.each do |player|
-          card = @dealer.give @stack
+          card = dealer.give stack
           player.draw card
         end
         print_results {|player| sum(player)}
@@ -145,16 +145,16 @@ class BlackJack
       say '*********************************'
 
       loop do
-        if busted?(@dealer)
-          say "Dealer lost! Dealer's score: #{sum(@dealer)}"
+        if busted?(dealer)
+          say "Dealer lost! Dealer's score: #{sum(dealer)}"
           say 'Here are the final results:'
           print_results {|player| sum(player)}
           break
-        elsif won?(@dealer)
-          say "Dealer won! Dealer's score: #{sum(@dealer)}"
+        elsif won?(dealer)
+          say "Dealer won! Dealer's score: #{sum(dealer)}"
           break
-        elsif should_stay?(@dealer)
-          say "Dealer's limit reached: #{sum(@dealer)}"
+        elsif should_stay?(dealer)
+          say "Dealer's limit reached: #{sum(dealer)}"
           say 'Here are the final results:'
           print_results {|player| sum(player)}
           break
@@ -184,6 +184,10 @@ class BlackJack
 
   include Interactive
   include BusinessLogic
+
+  attr_accessor :dealer
+  attr_accessor :players
+  attr_accessor :stack
 
   def initialize
     @dealer = Dealer.new '<DEALER>'
