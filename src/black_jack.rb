@@ -1,6 +1,6 @@
-require './player'
-require './dealer'
-require './card_stack'
+require_relative './player'
+require_relative './dealer'
+require_relative './card_stack'
 
 class BlackJack
 
@@ -8,14 +8,20 @@ class BlackJack
     def say(text)
       puts text
     end
+    def ask_for_number_of_players
+      gets.chomp
+    end
+    def ask_for_the_player_name
+      gets.chomp
+    end
     def kick_off?
       say 'Welcome to Black Jack. Have fun.'
       say 'Give the number of players at the table:'
-      num_of_players = gets.chomp
-      if !num_of_players.chomp.match(/^[0-9]+$/).nil?
+      num_of_players = ask_for_number_of_players
+      if !num_of_players.match(/^[0-9]+$/).nil?
         num_of_players.to_i.times do |i|
           say "Player ##{i+1}:"
-          players << Player.new(gets.chomp)
+          players << Player.new(ask_for_the_player_name)
         end
       else
         say 'The number of players is not valid.'

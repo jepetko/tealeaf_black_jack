@@ -1,5 +1,5 @@
-require './draw_ability'
-require './card'
+require_relative './draw_ability'
+require_relative './card'
 
 class Player
   include DrawAbility

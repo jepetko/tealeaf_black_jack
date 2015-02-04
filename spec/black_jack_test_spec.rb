@@ -1,8 +1,55 @@
+#current_dir = File.expand_path('../src', __FILE__)
+#Dir["#{current_dir}/**/*.rb"].each { |f| require f }
+require_relative '../src/black_jack.rb'
+
 describe 'Black Jack Logic' do
 
   describe 'Interactive module' do
+    before(:all) do
+
+      module BlackJack::Interactive
+        def ask_for_number_of_players
+          '3'
+        end
+
+        def ask_for_the_player_name
+          @counter ||= 0
+          name = ''
+          case @counter
+            when 0
+              name = 'Ramin'
+            when 1
+              name = 'Kati'
+            when 2
+              name = 'Juje'
+          end
+          @counter = @counter + 1
+          name
+        end
+      end
+
+      @singleton = Object.new
+      class << @singleton
+        include BlackJack::Interactive
+        def players=(p)
+          @players = p
+        end
+        def players
+          @players
+        end
+      end
+      @singleton.players = []
+    end
+
+    before(:each) do
+    end
+
     it 'asks for the number of players' do
-      pending
+      @singleton.kick_off?
+      expect(@singleton.players.count).to be(3)
+      puts @singleton.players.inspect
+      expect(@singleton.players.first.name).to eq('Ramin')
+      expect(@singleton.players.last.name). to eq('Juje')
     end
 
     it 'asks for the name of the particular player' do
@@ -14,7 +61,7 @@ describe 'Black Jack Logic' do
     end
 
     it 'prints the winner' do
-
+      pending
     end
   end
 
