@@ -1,4 +1,4 @@
-require './card'
+require_relative './card'
 
 class CardStack
   BASIC_STACK = []
@@ -7,14 +7,16 @@ class CardStack
 
   protected
   def initialize_basic_stack
-    if BASIC_STACK.empty?
-      (2..10).each do |n|
-        BASIC_STACK << Card.new(n)
+    4.times do
+      if BASIC_STACK.empty?
+        (2..10).each do |n|
+          BASIC_STACK << Card.new(n)
+        end
+        BASIC_STACK << Card.new('Jack',10)
+        BASIC_STACK << Card.new('Queen',10)
+        BASIC_STACK << Card.new('King',10)
+        BASIC_STACK << Card.new('Ace',11)
       end
-      BASIC_STACK << Card.new('Jack',10)
-      BASIC_STACK << Card.new('Queen',10)
-      BASIC_STACK << Card.new('King',10)
-      BASIC_STACK << Card.new('Ace',11)
     end
   end
 
