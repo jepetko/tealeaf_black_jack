@@ -35,9 +35,9 @@ class BlackJack
     end
     def print_winner(winner)
       if winner.nil?
-        say '-+-+-+-+-+-+ Winner is no one. -+-+-+-+-+-+ '
+        say '-+-+-+-+-+-+ Winner is no one. -+-+-+-+-+-+'
       else
-        say "-+-+-+-+-+-+ Winner is #{winner.name}. -+-+-+-+-+-+ "
+        say "-+-+-+-+-+-+ Winner is #{winner.name}. -+-+-+-+-+-+"
       end
     end
   end

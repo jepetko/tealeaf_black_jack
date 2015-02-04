@@ -8,6 +8,11 @@ describe 'Black Jack Logic' do
     before(:all) do
 
       module BlackJack::Interactive
+        attr_accessor :text_buff
+        def say(text)
+          @text_buff << text
+        end
+
         def ask_for_number_of_players
           '3'
         end
@@ -31,37 +36,57 @@ describe 'Black Jack Logic' do
       @singleton = Object.new
       class << @singleton
         include BlackJack::Interactive
+
+        # Note: for some reason attr_accessors don't work here
         def players=(p)
           @players = p
         end
         def players
           @players
         end
+        def dealer=(d)
+          @dealer = d
+        end
+        def dealer
+          @dealer
+        end
       end
+
+      @singleton.text_buff = []
       @singleton.players = []
+      @singleton.dealer = Player.new('<DEALER>')
     end
 
     before(:each) do
+      @singleton.text_buff.clear
+      @singleton.kick_off?
     end
 
-    it 'asks for the number of players' do
-      @singleton.kick_off?
+    it 'asks for the number of players and the names of the players' do
       expect(@singleton.players.count).to be(3)
       puts @singleton.players.inspect
       expect(@singleton.players.first.name).to eq('Ramin')
       expect(@singleton.players.last.name). to eq('Juje')
     end
 
-    it 'asks for the name of the particular player' do
-      pending
-    end
-
     it 'prints players score' do
-      pending
+      @singleton.print_results do |player|
+        10
+      end
+
+      buff = @singleton.text_buff.join(';')
+      expect(buff).to match(/#1 Ramin: 10/)
+      expect(buff).to match(/#2 Kati: 10/)
+      expect(buff).to match(/#3 Juje: 10/)
     end
 
     it 'prints the winner' do
-      pending
+
+      winner = @singleton.players.first
+      @singleton.print_winner winner
+
+      expect(winner.name).to eq('Ramin')
+      expect(@singleton.text_buff.last).to eq('-+-+-+-+-+-+ Winner is Ramin. -+-+-+-+-+-+')
     end
   end
 
