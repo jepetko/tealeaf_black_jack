@@ -216,30 +216,66 @@ describe 'Black Jack Logic' do
       end
 
       describe 'busted? method' do
+
+        before(:each) do
+          @p = @logic.players.first
+        end
+
         it 'returns true if the SUM is greater than 21' do
-          pending
+          @p.draw Card.new(2)
+          @p.draw Card.new(10)
+          @p.draw Card.new('King',10)
+
+          expect(@logic.busted?(@p)).to be(true)
         end
       end
 
       describe 'won? method' do
-        it 'returns true if the SUM is 21 and there is no further player with 21 points' do
-          pending
-        end
-      end
 
-      describe 'should_stay? method' do
-        it 'returns true if the dealer has >= 17 points' do
-          pending
+        context 'returns false if the player has less than 21 points' do
+          it 'returns false' do
+            @logic.players.first.draw Card.new(10)
+            expect(@logic.won?(@logic.players.first)).to be(false)
+          end
+        end
+
+        context 'there are no further players with 21 points' do
+          it 'returns true' do
+            @logic.players.first.draw Card.new(2)
+            @logic.players.last.draw Card.new(10)
+            @logic.players.last.draw Card.new('Ace', 11)
+
+            expect(@logic.won?(@logic.players.last)).to be(true)
+          end
+        end
+
+        context 'there is another player with 21 points' do
+          it 'returns false' do
+            @logic.players.first.draw Card.new(10)
+            @logic.players.first.draw Card.new(9)
+            @logic.players.first.draw Card.new(2)
+
+            @logic.players.last.draw Card.new(10)
+            @logic.players.last.draw Card.new('Ace', 11)
+
+            expect(@logic.won?(@logic.players.first)).to be(false)
+            expect(@logic.won?(@logic.players.last)).to be(false)
+          end
         end
       end
 
       describe 'detect_winner' do
         it 'returns the player with the max. points' do
-          pending
+          @logic.players.each { |p| p.draw Card.new(10) }
+          @logic.players[1].draw Card.new(5)
+
+          expect(@logic.detect_winner).to be(@logic.players[1])
         end
 
         it 'returns null if there are players with the same number of points' do
-          pending
+          @logic.players.each { |p| p.draw Card.new(10) }
+
+          expect(@logic.detect_winner).to be_nil
         end
       end
     end
