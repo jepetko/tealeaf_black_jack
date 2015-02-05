@@ -8,7 +8,10 @@ describe 'Black Jack Logic' do
     before(:all) do
 
       module BlackJack::Interactive
+
+        # log the text said in a buffer
         attr_accessor :text_buff
+
         def say(text)
           @text_buff << text
         end
@@ -35,21 +38,12 @@ describe 'Black Jack Logic' do
 
       @singleton = Object.new
       class << @singleton
+        # include the module to be tested
         include BlackJack::Interactive
 
-        # Note: for some reason attr_accessors don't work here
-        def players=(p)
-          @players = p
-        end
-        def players
-          @players
-        end
-        def dealer=(d)
-          @dealer = d
-        end
-        def dealer
-          @dealer
-        end
+        # mock methods which normally come from the implementing class
+        attr_accessor :players
+        attr_accessor :dealer
       end
 
       @singleton.text_buff = []
