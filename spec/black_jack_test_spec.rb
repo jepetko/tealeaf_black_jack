@@ -52,8 +52,9 @@ describe 'Black Jack Logic' do
         attr_accessor :dealer
       end
 
+      @singleton.text_buff = []
       @singleton.players = []
-      @singleton.dealer = Player.new('<DEALER>')
+      @singleton.dealer = Dealer.new('<DEALER>')
     end
 
     before(:each) do
@@ -100,7 +101,7 @@ describe 'Black Jack Logic' do
       end
 
       @singleton.players = []
-      @singleton.dealer = Player.new('<DEALER>')
+      @singleton.dealer = Dealer.new('<DEALER>')
       5.times { |i| @singleton.players << Player.new("Player #{i}") }
     end
 
@@ -158,34 +159,57 @@ describe 'Black Jack Logic' do
 
   describe 'Business Logic' do
 
-    before(:all) do
+    before(:each) do
+      module DrawAbility::Interactive
+        def draw?
+          true
+        end
+      end
+    end
+
+    before(:each) do
       @logic = BlackJack.new
       @logic.kick_off?
+      @logic.dealer = Dealer.new('<DEALER>')
     end
 
     context 'for dealer' do
       it 'should_draw? returns true if the dealer has less than 17 points' do
-        pending
+        @logic.dealer.draw Card.new(10)
+        @logic.dealer.draw Card.new(6)
+        expect(@logic.should_draw?(@logic.dealer)).to be(true)
       end
 
       it 'should_draw? returns false if the dealer has more than 17 points' do
-        pending
+        @logic.dealer.draw Card.new(10)
+        @logic.dealer.draw Card.new(6)
+        @logic.dealer.draw Card.new(2)
+        expect(@logic.should_draw?(@logic.dealer)).to be(false)
       end
     end
 
     context 'for the player' do
+
       it 'should_draw? returns true if the player says YES' do
-        pending
+        expect(@logic.should_draw?(@logic.players.first)).to be(true)
       end
 
       describe 'SUM computation' do
+
+        before(:each) do
+          @p = @logic.players.first
+          @p.draw Card.new(4)
+          @p.draw Card.new(10)
+        end
+
         it 'computes the sum of all cards' do
-          pending
+          expect(@logic.sum(@p)).to be(14)
         end
 
         context 'when there is an ace and the 21 points mark is exceeded' do
           it 'computes an aces as 1' do
-            pending
+            @p.draw Card.new('Ace', 1)
+            expect(@logic.sum(@p)).to be(15)
           end
         end
 
