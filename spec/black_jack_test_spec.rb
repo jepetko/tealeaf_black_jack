@@ -4,49 +4,54 @@ require_relative '../src/black_jack.rb'
 
 describe 'Black Jack Logic' do
 
-  describe 'Interactive module' do
-    before(:all) do
+  before(:all) do
 
-      module BlackJack::Interactive
+    module BlackJack::Interactive
 
-        # log the text said in a buffer
-        attr_accessor :text_buff
+      # log the text said in a buffer
+      attr_accessor :text_buff
 
-        def say(text)
-          @text_buff << text
+      def say(text)
+        if @text_buff.nil?
+          @text_buff = []
         end
-
-        def ask_for_number_of_players
-          '3'
-        end
-
-        def ask_for_the_player_name
-          @counter ||= 0
-          name = ''
-          case @counter
-            when 0
-              name = 'Ramin'
-            when 1
-              name = 'Kati'
-            when 2
-              name = 'Juje'
-          end
-          @counter = @counter + 1
-          name
-        end
+        @text_buff << text
       end
 
+      def ask_for_number_of_players
+        '3'
+      end
+
+      def ask_for_the_player_name
+        @counter ||= 0
+        name = ''
+        case @counter
+          when 0
+            name = 'Ramin'
+          when 1
+            name = 'Kati'
+          when 2
+            name = 'Juje'
+        end
+        @counter = @counter + 1
+        name
+      end
+    end
+
+  end
+
+  describe 'Interactive module' do
+
+    before(:all) do
       @singleton = Object.new
       class << @singleton
         # include the module to be tested
         include BlackJack::Interactive
-
         # mock methods which normally come from the implementing class
         attr_accessor :players
         attr_accessor :dealer
       end
 
-      @singleton.text_buff = []
       @singleton.players = []
       @singleton.dealer = Player.new('<DEALER>')
     end
@@ -97,8 +102,6 @@ describe 'Black Jack Logic' do
       @singleton.players = []
       @singleton.dealer = Player.new('<DEALER>')
       5.times { |i| @singleton.players << Player.new("Player #{i}") }
-
-
     end
 
     it 'returns all players' do
@@ -114,7 +117,6 @@ describe 'Black Jack Logic' do
       end
 
       it 'returns next player' do
-
         p = @singleton.next_player @accept_player
         expect(p.name).to eq('Player 0')
 
@@ -155,6 +157,11 @@ describe 'Black Jack Logic' do
   end
 
   describe 'Business Logic' do
+
+    before(:all) do
+      @logic = BlackJack.new
+      @logic.kick_off?
+    end
 
     context 'for dealer' do
       it 'should_draw? returns true if the dealer has less than 17 points' do
