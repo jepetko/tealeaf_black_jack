@@ -160,7 +160,7 @@ describe 'Black Jack Logic' do
   describe 'Business Logic' do
 
     before(:each) do
-      module DrawAbility::Interactive
+      module Player::Interactive
         def draw?
           true
         end
