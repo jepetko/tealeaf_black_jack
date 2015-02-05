@@ -77,8 +77,8 @@ class BlackJack
     def handle_player(player)
       loop do
         say player.drawn_cards_as_str
-        break if !should_draw?(player)
-        card = dealer.give(stack)
+        break if !player.should_draw?
+        card = stack.give
         say "Your card is: [ #{card.type} ]"
         player.draw(card)
         break if player.busted? {|sum| say ".. #{player.name}, you are busted! Your sum: #{sum}."}
@@ -109,10 +109,10 @@ class BlackJack
       say 'Giving cards:'
       2.times do
         all_players.each do |player|
-          card = dealer.give stack
+          card = stack.give
           player.draw card
         end
-        print_results {|player| sum(player)}
+        print_results {|player| player.sum}
       end
       say '*********************************'
 
@@ -122,7 +122,7 @@ class BlackJack
           say 'Here are the final results:'
           print_results {|player| player.sum}
           break
-        elsif dealer.won?
+        elsif won?(dealer)
           say "Dealer won! Dealer's score: #{dealer.sum}"
           break
         elsif dealer.should_stay?
