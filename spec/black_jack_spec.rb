@@ -173,110 +173,52 @@ describe 'Black Jack Logic' do
       @logic.dealer = Player.new('<DEALER>',true)
     end
 
-    context 'for dealer' do
-      it 'should_draw? returns true if the dealer has less than 17 points' do
-        @logic.dealer.draw Card.new(10)
-        @logic.dealer.draw Card.new(6)
-        expect(@logic.should_draw?(@logic.dealer)).to be(true)
+    describe 'won? method' do
+
+      context 'returns false if the player has less than 21 points' do
+        it 'returns false' do
+          @logic.players.first.draw Card.new(10)
+          expect(@logic.won?(@logic.players.first)).to be(false)
+        end
       end
 
-      it 'should_draw? returns false if the dealer has more than 17 points' do
-        @logic.dealer.draw Card.new(10)
-        @logic.dealer.draw Card.new(6)
-        @logic.dealer.draw Card.new(2)
-        expect(@logic.should_draw?(@logic.dealer)).to be(false)
+      context 'there are no further players with 21 points' do
+        it 'returns true' do
+          @logic.players.first.draw Card.new(2)
+          @logic.players.last.draw Card.new(10)
+          @logic.players.last.draw Card.new('Ace', 11)
+
+          expect(@logic.won?(@logic.players.last)).to be(true)
+        end
+      end
+
+      context 'there is another player with 21 points' do
+        it 'returns false' do
+          @logic.players.first.draw Card.new(10)
+          @logic.players.first.draw Card.new(9)
+          @logic.players.first.draw Card.new(2)
+
+          @logic.players.last.draw Card.new(10)
+          @logic.players.last.draw Card.new('Ace', 11)
+
+          expect(@logic.won?(@logic.players.first)).to be(false)
+          expect(@logic.won?(@logic.players.last)).to be(false)
+        end
       end
     end
 
-    context 'for the player' do
+    describe 'detect_winner' do
+      it 'returns the player with the max. points' do
+        @logic.players.each { |p| p.draw Card.new(10) }
+        @logic.players[1].draw Card.new(5)
 
-      it 'should_draw? returns true if the player says YES' do
-        expect(@logic.should_draw?(@logic.players.first)).to be(true)
+        expect(@logic.detect_winner).to be(@logic.players[1])
       end
 
-      describe 'SUM computation' do
+      it 'returns null if there are players with the same number of points' do
+        @logic.players.each { |p| p.draw Card.new(10) }
 
-        before(:each) do
-          @p = @logic.players.first
-          @p.draw Card.new(4)
-          @p.draw Card.new(10)
-        end
-
-        it 'computes the sum of all cards' do
-          expect(@logic.sum(@p)).to be(14)
-        end
-
-        context 'when there is an ace and the 21 points mark is exceeded' do
-          it 'computes an aces as 1' do
-            @p.draw Card.new('Ace', 1)
-            expect(@logic.sum(@p)).to be(15)
-          end
-        end
-
-      end
-
-      describe 'busted? method' do
-
-        before(:each) do
-          @p = @logic.players.first
-        end
-
-        it 'returns true if the SUM is greater than 21' do
-          @p.draw Card.new(2)
-          @p.draw Card.new(10)
-          @p.draw Card.new('King',10)
-
-          expect(@logic.busted?(@p)).to be(true)
-        end
-      end
-
-      describe 'won? method' do
-
-        context 'returns false if the player has less than 21 points' do
-          it 'returns false' do
-            @logic.players.first.draw Card.new(10)
-            expect(@logic.won?(@logic.players.first)).to be(false)
-          end
-        end
-
-        context 'there are no further players with 21 points' do
-          it 'returns true' do
-            @logic.players.first.draw Card.new(2)
-            @logic.players.last.draw Card.new(10)
-            @logic.players.last.draw Card.new('Ace', 11)
-
-            expect(@logic.won?(@logic.players.last)).to be(true)
-          end
-        end
-
-        context 'there is another player with 21 points' do
-          it 'returns false' do
-            @logic.players.first.draw Card.new(10)
-            @logic.players.first.draw Card.new(9)
-            @logic.players.first.draw Card.new(2)
-
-            @logic.players.last.draw Card.new(10)
-            @logic.players.last.draw Card.new('Ace', 11)
-
-            expect(@logic.won?(@logic.players.first)).to be(false)
-            expect(@logic.won?(@logic.players.last)).to be(false)
-          end
-        end
-      end
-
-      describe 'detect_winner' do
-        it 'returns the player with the max. points' do
-          @logic.players.each { |p| p.draw Card.new(10) }
-          @logic.players[1].draw Card.new(5)
-
-          expect(@logic.detect_winner).to be(@logic.players[1])
-        end
-
-        it 'returns null if there are players with the same number of points' do
-          @logic.players.each { |p| p.draw Card.new(10) }
-
-          expect(@logic.detect_winner).to be_nil
-        end
+        expect(@logic.detect_winner).to be_nil
       end
     end
   end

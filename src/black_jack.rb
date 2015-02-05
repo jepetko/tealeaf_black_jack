@@ -74,46 +74,6 @@ class BlackJack
     end
     include PlayerIterator
 
-    def should_draw?(player)
-      if player.dealer?
-        !should_stay?(player)
-      else
-        player.draw?
-      end
-    end
-
-    def sum(player)
-      total = player.total
-      if total > 21
-        total = 0
-        player.cards.each do |c|
-          if c.ace?
-            total += c.value {1}
-          else
-            total += c.value
-          end
-        end
-      end
-      total
-    end
-
-    def busted?(player, &when_busted)
-      sum = sum(player)
-      busted = sum > 21
-      if busted && !when_busted.nil?
-        when_busted.call sum
-      end
-      busted
-    end
-
-    def won?(player)
-      sum(player) == 21 && !detect_winner.nil?
-    end
-
-    def should_stay?(dealer)
-      sum(dealer) >= 17
-    end
-
     def handle_player(player)
       loop do
         say player.drawn_cards_as_str
@@ -121,19 +81,24 @@ class BlackJack
         card = dealer.give(stack)
         say "Your card is: [ #{card.type} ]"
         player.draw(card)
-        break if busted?(player) {|sum| say ".. #{player.name}, you are busted! Your sum: #{sum}."}
+        break if player.busted? {|sum| say ".. #{player.name}, you are busted! Your sum: #{sum}."}
       end
     end
 
+
+    def won?(player)
+      player.sum == 21 && !detect_winner.nil?
+    end
+
     def detect_winner
-      eligible_players = all_players.select { |p| !busted?(p)}
+      eligible_players = all_players.select { |p| !p.busted?}
       sorted = eligible_players.sort do |p1,p2|
-        sum(p1) - sum(p2)
+        p1.sum - p2.sum
       end
       len = sorted.length
       # tie
       if len > 1
-        return nil if sum(sorted.last) == sum(sorted[sorted.length-2])
+        return nil if sorted.last.sum == sorted[sorted.length-2].sum
       end
       sorted.last
     end
@@ -152,29 +117,29 @@ class BlackJack
       say '*********************************'
 
       loop do
-        if busted?(dealer)
-          say "Dealer lost! Dealer's score: #{sum(dealer)}"
+        if dealer.busted?
+          say "Dealer lost! Dealer's score: #{dealer.sum}"
           say 'Here are the final results:'
-          print_results {|player| sum(player)}
+          print_results {|player| player.sum}
           break
-        elsif won?(dealer)
-          say "Dealer won! Dealer's score: #{sum(dealer)}"
+        elsif dealer.won?
+          say "Dealer won! Dealer's score: #{dealer.sum}"
           break
-        elsif should_stay?(dealer)
-          say "Dealer's limit reached: #{sum(dealer)}"
+        elsif dealer.should_stay?
+          say "Dealer's limit reached: #{dealer.sum}"
           say 'Here are the final results:'
-          print_results {|player| sum(player)}
+          print_results {|player| player.sum}
           break
         else
           # detect the next player. Player can be asked:
           # a) if he is not busted
           # b) if he is not the *dealer* whose score >= 17 (then he must stay)
           accept_player = lambda {|player|
-            if busted?(player)
+            if player.busted?
               return false
             else
-              if player.is_a?(Dealer)
-                return !should_stay?(player)
+              if player.dealer?
+                return !player.should_stay?
               end
             end
             true

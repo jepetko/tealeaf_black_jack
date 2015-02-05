@@ -24,6 +24,17 @@ class Player
     @dealer = dealer
   end
 
+  private
+  def total
+    return 0 if @cards.nil?
+    total = 0
+    @cards.each do |c|
+      total += c.value
+    end
+    total
+  end
+
+  public
   def dealer?
     @dealer
   end
@@ -41,12 +52,39 @@ class Player
     str
   end
 
-  def total
-    return 0 if @cards.nil?
-    total = 0
-    @cards.each do |c|
-      total += c.value
+  def should_draw?
+    if dealer?
+      !should_stay?
+    else
+      draw?
     end
-    total
+  end
+
+  def sum
+    t = total
+    if t > 21
+      t = 0
+      @cards.each do |c|
+        if c.ace?
+          t += c.value {1}
+        else
+          t += c.value
+        end
+      end
+    end
+    t
+  end
+
+  def busted?(&when_busted)
+    s = sum
+    busted = s > 21
+    if busted && !when_busted.nil?
+      when_busted.call s
+    end
+    busted
+  end
+
+  def should_stay?
+    dealer? && sum >= 17
   end
 end
