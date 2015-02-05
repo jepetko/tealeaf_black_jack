@@ -1,4 +1,3 @@
-require_relative './draw_ability'
 require_relative './card'
 
 class Player
