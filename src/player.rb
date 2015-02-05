@@ -19,8 +19,13 @@ class Player
   attr_accessor :name
   attr_accessor :cards
 
-  def initialize(name)
+  def initialize(name, dealer=false)
     @name = name
+    @dealer = dealer
+  end
+
+  def dealer?
+    @dealer
   end
 
   def draw(card)

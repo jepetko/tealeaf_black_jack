@@ -23,6 +23,12 @@ class CardStack
   public
   def initialize(packages_count=1)
     packages_count.times { self.initialize_basic_stack }
-    self.stack = BASIC_STACK.shuffle
+    @stack = BASIC_STACK.shuffle
+  end
+
+  def give
+    return nil if @stack.nil?
+    return nil if @stack.empty?
+    @stack.pop
   end
 end

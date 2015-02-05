@@ -1,5 +1,4 @@
 require_relative './player'
-require_relative './dealer'
 require_relative './card_stack'
 
 class BlackJack
@@ -76,7 +75,7 @@ class BlackJack
     include PlayerIterator
 
     def should_draw?(player)
-      if player.is_a?(Dealer)
+      if player.dealer?
         !should_stay?(player)
       else
         player.draw?
@@ -198,7 +197,7 @@ class BlackJack
   attr_accessor :stack
 
   def initialize
-    @dealer = Dealer.new '<DEALER>'
+    @dealer = Player.new '<DEALER>',true
     @players = []
     @stack = CardStack.new
   end

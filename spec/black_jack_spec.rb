@@ -54,7 +54,7 @@ describe 'Black Jack Logic' do
 
       @singleton.text_buff = []
       @singleton.players = []
-      @singleton.dealer = Dealer.new('<DEALER>')
+      @singleton.dealer = Player.new('<DEALER>',true)
     end
 
     before(:each) do
@@ -101,7 +101,7 @@ describe 'Black Jack Logic' do
       end
 
       @singleton.players = []
-      @singleton.dealer = Dealer.new('<DEALER>')
+      @singleton.dealer = Player.new('<DEALER>',true)
       5.times { |i| @singleton.players << Player.new("Player #{i}") }
     end
 
@@ -170,7 +170,7 @@ describe 'Black Jack Logic' do
     before(:each) do
       @logic = BlackJack.new
       @logic.kick_off?
-      @logic.dealer = Dealer.new('<DEALER>')
+      @logic.dealer = Player.new('<DEALER>',true)
     end
 
     context 'for dealer' do
