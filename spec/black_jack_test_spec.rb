@@ -86,28 +86,69 @@ describe 'Black Jack Logic' do
 
   describe 'PlayerIterator' do
 
-    context 'there are active players' do
-
-      context 'when the next player is not the dealer' do
-        it 'returns next player' do
-          pending
-        end
+    before(:each) do
+      @singleton = Object.new
+      class << @singleton
+        include BlackJack::BusinessLogic::PlayerIterator
+        attr_accessor :players
+        attr_accessor :dealer
       end
 
-      context 'when the next player is the dealer' do
-        it 'returns dealer if the sum < 17' do
-          pending
-        end
+      @singleton.players = []
+      @singleton.dealer = Player.new('<DEALER>')
+      5.times { |i| @singleton.players << Player.new("Player #{i}") }
 
-        it 'returns player if the sum >= 17' do
-          pending
-        end
+
+    end
+
+    it 'returns all players' do
+      expect(@singleton.all_players.count).to be(6)
+    end
+
+    context 'there are active players' do
+
+      before(:each) do
+        @accept_player = lambda {|player|
+          true
+        }
+      end
+
+      it 'returns next player' do
+
+        p = @singleton.next_player @accept_player
+        expect(p.name).to eq('Player 0')
+
+        p = @singleton.next_player @accept_player
+        expect(p.name).to eq('Player 1')
+
+        p = @singleton.next_player @accept_player
+        expect(p.name).to eq('Player 2')
+
+        p = @singleton.next_player @accept_player
+        expect(p.name).to eq('Player 3')
+
+        p = @singleton.next_player @accept_player
+        expect(p.name).to eq('Player 4')
+
+        p = @singleton.next_player @accept_player
+        expect(p.name).to eq('<DEALER>')
+
+        p = @singleton.next_player @accept_player
+        expect(p.name).to eq('Player 0')
       end
     end
 
     context 'there are no active players' do
-      it 'returns null' do
-        pending
+
+      before(:each) do
+        @accept_player = lambda {|player|
+          false
+        }
+      end
+
+      it 'returns nil' do
+        p = @singleton.next_player @accept_player
+        expect(p).to be_nil
       end
     end
 

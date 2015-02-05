@@ -55,6 +55,8 @@ class BlackJack
         idx = @current_player_idx
         loop do
           if idx >= all.length-1
+            # fix endless loop
+            return nil if @current_player_idx == -1
             idx = 0
           else
             idx += 1
